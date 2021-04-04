@@ -123,6 +123,12 @@ async def main_job() -> None:
 	
 	# Get an ID and go to work
 	car_id = await get_car_id()
+	
+	# make sure we have an id for the car
+	if not car_id:
+		print('Missing a car_id, which can be passed a number of ways.')
+		parser.print_help()
+		return
 
 	if poi_name:
 		await client.send_poi(car_id, poi_lat, poi_long, poi_name)
@@ -145,10 +151,6 @@ async def main_job() -> None:
 # sanity check for the bare minium input we need
 if not email or not password:
 	print('Missing email and/or password data.')
-	parser.print_help()
-	exit(2)
-elif not car_id:
-	print('Missing a car_id, which can be passed a number of ways.')
 	parser.print_help()
 	exit(2)
 
