@@ -35,7 +35,7 @@ if os.path.isfile(config_file_path):
 		try:
 			car_id = conf['car_id']
 		except:
-			pass
+			car_id= ''
 else:
 	# look for config from args or env
 	email = args.email
