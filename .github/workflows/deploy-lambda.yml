@@ -10,12 +10,12 @@ jobs:
     steps:
     - name: Git checkout
       uses: actions/checkout@v2
-    - name: AWS Lambda python deploy
-      uses: denzalman/lambda-python-action@1.0.0
+    - name: Py Lambda Deploy
+      uses: mariamrf/py-lambda-action@1.0.1
       with:
         lambda_layer_arn: 'arn:aws:lambda:us-east-1:623894182146:layer:pymazda-deps'
         lambda_name: 'pymazda'
-        lambda_region: 'us-east-1'
       env:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_DEFAULT_REGION: 'us-east-1'
