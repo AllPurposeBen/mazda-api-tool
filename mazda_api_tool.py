@@ -23,14 +23,19 @@ def get_env_settings():
 			except:
 				car_id= ''
 	else:
-		# look for config from args or env
-		car_id = args.car_id
-		if not email:
+		# look for config from env
+		try:
 			email = os.getenv('mazda_api_email')
-		if not password:
+		except:
+			pass
+		try:
 			password = os.getenv('mazda_api_password')
-		if not car_id:
+		except:
+			pass
+		try:
 			car_id = os.getenv('mazda_api_car_id')
+		except:
+		 pass
 
 async def output_all_data() -> None:
 	# Get list of vehicles from the API (returns a list)
