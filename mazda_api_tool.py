@@ -7,24 +7,7 @@ import argparse
 import sys
 import os
 
-parser = argparse.ArgumentParser(description='MyMazda API tool')
-parser.add_argument("--list", action='store_true', help="List all cars registered to your MyMazda account.")
-parser.add_argument("--name", type=str, help="Car's defined name.")
-parser.add_argument("--vin", type=str, help="Car's VIN.")
-parser.add_argument("--car_id", type=str, help="Car's defined id number.")
-parser.add_argument("--status", action='store_true', help="Return the status report from the vehicle.")
-parser.add_argument("--engine", choices=["start", "stop"], type=str, help="Control the engine.")
-parser.add_argument("--doors", choices=["lock", "unlock"], type=str, help="Control the door locks.")
-parser.add_argument("--email", type=str, help="MyMazda account email adress.")
-parser.add_argument("--password", type=str, help="MyMazda account password.")
-parser.add_argument("--poi_name", type=str, help="Point of interest name.")
-parser.add_argument("--poi_lat", type=float, help="Point of interest latitude.")
-parser.add_argument("--poi_long", type=float, help="Point of interest longitude.")
-if len(sys.argv) < 2:
-	parser.print_help()
-	sys.exit(1)
 
-args = parser.parse_args()
 config_file_path = os.path.join(os.path.dirname(__file__), "config.json")
 if os.path.isfile(config_file_path):
 	# read from the config
@@ -47,15 +30,36 @@ else:
 		password = os.getenv('mazda_api_password')
 	if not car_id:
 		car_id = os.getenv('mazda_api_car_id')
-do_list = args.list
-do_engine = args.engine
-do_doors = args.doors
-do_status = args.status
-poi_name = args.poi_name
-poi_lat = args.poi_lat
-poi_long = args.poi_long
-car_name = args.name
-car_vin = args.vin
+
+def get_settings()
+	parser = argparse.ArgumentParser(description='MyMazda API tool')
+	parser.add_argument("--list", action='store_true', help="List all cars registered to your MyMazda account.")
+	parser.add_argument("--name", type=str, help="Car's defined name.")
+	parser.add_argument("--vin", type=str, help="Car's VIN.")
+	parser.add_argument("--car_id", type=str, help="Car's defined id number.")
+	parser.add_argument("--status", action='store_true', help="Return the status report from the vehicle.")
+	parser.add_argument("--engine", choices=["start", "stop"], type=str, help="Control the engine.")
+	parser.add_argument("--doors", choices=["lock", "unlock"], type=str, help="Control the door locks.")
+	parser.add_argument("--email", type=str, help="MyMazda account email adress.")
+	parser.add_argument("--password", type=str, help="MyMazda account password.")
+	parser.add_argument("--poi_name", type=str, help="Point of interest name.")
+	parser.add_argument("--poi_lat", type=float, help="Point of interest latitude.")
+	parser.add_argument("--poi_long", type=float, help="Point of interest longitude.")
+	if len(sys.argv) < 2:
+		parser.print_help()
+		sys.exit(1)
+	
+	args = parser.parse_args()
+	do_list = args.list
+	do_engine = args.engine
+	do_doors = args.doors
+	do_status = args.status
+	poi_name = args.poi_name
+	poi_lat = args.poi_lat
+	poi_long = args.poi_long
+	car_name = args.name
+	car_vin = args.vin
+
 
 async def output_all_data() -> None:
 	# Get list of vehicles from the API (returns a list)
@@ -148,16 +152,23 @@ async def main_job() -> None:
 	# Close the session
 	await client.close()
 
+def lambda_handler(event, context):
+    # TODO implement
+    return {
+        'statusCode': 200,
+        'body': json.dumps(event)
+    }
+
 # sanity check for the bare minium input we need
 if not email or not password:
 	print('Missing email and/or password data.')
-	parser.print_help()
 	exit(2)
+	
+if __name__ == "__main__":
+	# Initialize API client (MNAO = North America)
+	client = pymazda.Client(email, password, "MNAO")
 
-# Initialize API client (MNAO = North America)
-client = pymazda.Client(email, password, "MNAO")
-
-# Run the job
-loop = asyncio.get_event_loop()
-loop.run_until_complete(main_job())
+	# Run the job
+	loop = asyncio.get_event_loop()
+	loop.run_until_complete(main_job())
 
